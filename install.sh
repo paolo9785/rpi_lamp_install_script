@@ -24,7 +24,7 @@ apt-get install -y rpi-update
 
 #helps to prevent hacking attempts by detecting log-in attempts that use a dictionary attack 
 #and banning the offending IP address for a short while. 
-apt-get install fail2ban
+apt-get install fail2ban -y
 
 #check current webserver status on the machine
 
@@ -40,7 +40,7 @@ read answer
       echo "Ok. Performing clean up..please wait."
       service apache2 stop
       update-rc.d -f apache2 remove
-      apt-get remove apache2
+      apt-get remove apache2 -y
   else
       echo "Ok. Skipping thrid webservers presence and starting Nginx install. Please make sure to set a different port on your NGINX to allow cohesistance with other services."
   fi
@@ -48,7 +48,7 @@ fi
 
 #install PHP-fpm
 echo -n "Installing php-fpm 7.0"
-apt-get install -t stretch -y php7.0 php7.0-fpm php7.0-cli php7.0-opcache php7.0-mbstring php7.0-curl php7.0-xml php7.0-gd php7.0-mysql
+apt-get install -t stretch -y php7.0 php7.0-fpm php7.0-cli php7.0-opcache php7.0-mbstring php7.0-curl php7.0-xml php7.0-gd php7.0-mysql -y
 sudo phpenmod mcrypt
 sudo service php7.0-fpm restart
 
@@ -97,13 +97,12 @@ service php7.0-fpm restart
 
 #MariaDB
 echo -n "Installing MySQL server"
-sudo apt-get install mariadb-server
+sudo apt-get install mariadb-server mariadb-client
 echo -n "MariaDB server installed"
-echo -n "Configuring MariaDB"
-read -s -p "Please chose a root password for MariaDB: " mysqlPass
-mysql -u root -p --database="mysql" --execute="UPDATE mysql.user SET Password=PASSWORD('$mysqlPass') WHERE User='root'; FLUSH PRIVILEGES;"
+echo -n "Securing MariaDB"
+mysql_secure_installation
 
-ervice mysql restart
+service mysql restart
 
 
 
