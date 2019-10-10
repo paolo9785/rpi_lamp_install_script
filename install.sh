@@ -22,6 +22,8 @@ sudo apt-get upgrade -y
 #Update RPI firmware (optional)
 apt-get install -y rpi-update
 
+apt-get install -y lsof
+
 #helps to prevent hacking attempts by detecting log-in attempts that use a dictionary attack 
 #and banning the offending IP address for a short while. 
 apt-get install fail2ban -y
@@ -47,17 +49,17 @@ read answer
 fi
 
 #install PHP-fpm
-echo -n "Installing php-fpm 7.0"
-apt-get install -t stretch -y php7.0 php7.0-fpm php7.0-cli php7.0-opcache php7.0-mbstring php7.0-curl php7.0-xml php7.0-gd php7.0-mysql -y
-sudo phpenmod mcrypt
-sudo service php7.0-fpm restart
+echo -n "Installing php-fpm 7.3"
+apt-get install php7.3 php7.3-fpm php7.3-cli php7.3-opcache php7.3-mbstring php7.3-curl php7.3-xml php7.3-gd php7.3-mysql -y
+#sudo phpenmod mcrypt #does not exists under 7.3 php.ini
+sudo service php7.3-fpm restart
 
 #install Nginx
 echo -n "Installing Nginx server"
-sudo apt-get install -t stretch nginx
+sudo apt-get install -y nginx
 
 update-rc.d nginx defaults
-update-rc.d php7.0-fpm defaults
+update-rc.d php7.3-fpm defaults
 
 
 # change settings on vhosts for automatic redirection to the “index.php” files for the site folders
@@ -66,13 +68,14 @@ sed -i 's/index index.html index.htm index.nginx-debian.html;/index index.html i
 
 #configuring php-fpm / Nginx
 
-sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php/7.0/fpm/php.ini
+sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php/7.3/fpm/php.ini
 sed -i 's/# server_names_hash_bucket_size/server_names_hash_bucket_size/' /etc/nginx/nginx.conf
 
+#to verify ---mast not be added at the end of file
 tee -a /etc/nginx/sites-available/default << END
 location ~ \.php$ { 
 include snippets/fastcgi-php.conf;
- fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+ fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
 }
 END
 
@@ -92,12 +95,12 @@ echo 'Nginx work’s !' > /var/www/html/index.html
 
 echo -n Restarting Nginx / php-fpm"
 service nginx restart
-service php7.0-fpm restart
+service php7.3-fpm restart
 
 
 #MariaDB
 echo -n "Installing MySQL server"
-sudo apt-get install mariadb-server mariadb-client
+sudo apt-get install -y mariadb-server mariadb-client
 echo -n "MariaDB server installed"
 echo -n "Securing MariaDB"
 mysql_secure_installation
@@ -109,8 +112,12 @@ service mysql restart
 # PhpMyAdmin
 read -p "Do you want to install PhpMyAdmin? <y/N> " prompt
 if [ "$prompt" = "y" ]; then
-	apt-get install -t stretch -y phpmyadmin
-	ln -s /usr/share/phpmyadmin /var/www/default/phpmyadmin
+	echo "Since Nginx is not available from the list push TAB key instead of selecting any"
+	apt-get install -y phpmyadmin
+	sudo apt install php7.1-mcrypt
+	sudo ln -s /etc/php/7.1/mods-available/mcrypt.ini /etc/php/7.3/mods-available/
+	sudo phpenmod mcrypt
+	ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
 	echo "http://192.168.XXX.XXX/phpmyadmin to enter PhpMyAdmin"
 fi
 
@@ -122,7 +129,7 @@ echo -n "http://192.168.1.1/index.html"
 echo -n "http://192.168.1.1/index.php"
 echo -n "http://192.168.1.1/phpmyadmin"
 
-mysql_secure_installation
+
 
 
 
