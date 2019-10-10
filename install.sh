@@ -65,7 +65,7 @@ update-rc.d php7.3-fpm defaults
 # change settings on vhosts for automatic redirection to the “index.php” files for the site folders
 echo -n "Setting up Nginx configuration"
 sed -i 's/index index.html index.htm index.nginx-debian.html;/index index.html index.htm index.php;/g' /etc/nginx/sites-available/default
-
+sed -i 's/server_name _;/server_name localhost;/g /etc/nginx/sites-available/default
 #configuring php-fpm / Nginx
 
 sed -i 's/^;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php/7.3/fpm/php.ini
@@ -118,6 +118,7 @@ if [ "$prompt" = "y" ]; then
 	sudo ln -s /etc/php/7.1/mods-available/mcrypt.ini /etc/php/7.3/mods-available/
 	sudo phpenmod mcrypt
 	ln -s /usr/share/phpmyadmin /var/www/html/phpmyadmin
+	
 	echo "http://192.168.XXX.XXX/phpmyadmin to enter PhpMyAdmin"
 fi
 
