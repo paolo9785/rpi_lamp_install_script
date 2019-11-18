@@ -30,7 +30,7 @@ apt-get install fail2ban -y
 
 #check current webserver status on the machine
 
-PORT_CHECK = (sudo lsof -nPi | grep ":80 (LISTEN)" | wc -l)
+PORT_CHECK=$(sudo lsof -nPi | grep ":80 (LISTEN)" | wc -l)
 
 
 if [ $PORT_CHECK > 0 ] ;then
