@@ -1,8 +1,8 @@
 #########################################################################
-#LAMP for Raspberry Pi                                                  #
+#LAMP su Raspberry Pi                                                   #
 #Questo script installera Nginx, PHP 7, FTP, and MySQL (MariaDB).       #
 #Script realizzato da Paolo Porqueddu                                   #
-#Visita il blog per tanti altri progetti         www.paolo9785.com      #
+#Visita il blog per tanti altri progetti ( https://www.paolo9785.com )  #
 #########################################################################
 
 #!/bin/bash
